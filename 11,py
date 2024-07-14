@@ -1,0 +1,28 @@
+import torch
+import torchvision
+from torchvision.models.detection import maskrcnn_resnet50_fpn
+from PIL import Image
+import matplotlib.pyplot as plt
+
+def detect_and_segment(image_path):
+    model = maskrcnn_resnet50_fpn(pretrained=True)
+    model.eval()
+
+    image = Image.open(image_path)
+    transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    input_tensor = transform(image)
+    input_batch = input_tensor.unsqueeze(0)
+
+    with torch.no_grad():
+        prediction = model(input_batch)[0]
+
+    return image, prediction
+
+image, prediction = detect_and_segment('hs.jpeg')
+
+plt.imshow(image)
+for mask in prediction['masks']:
+    if mask.shape[0] > 0:
+        plt.imshow(mask[0].numpy(), alpha=0.5)
+plt.axis('off')
+plt.show()
