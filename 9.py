@@ -78,3 +78,20 @@ for epoch in range(EPOCHS):
         plt.close()
 
 print("Training completed.")
+
+# Generate and display a single image using the trained GAN
+def generate_and_display_image(generator):
+    noise = tf.random.normal([1, 100])
+    generated_image = generator(noise, training=False)
+    
+    plt.figure(figsize=(4, 4))
+    plt.imshow(generated_image[0, :, :, 0] * 127.5 + 127.5, cmap='gray')
+    plt.axis('off')
+    plt.title('Generated Image')
+    plt.savefig('final_generated_image.png')
+    plt.show()
+
+# Call the function to generate and display an image
+generate_and_display_image(generator)
+
+print("Image generated and saved as 'generated_image.png'")
