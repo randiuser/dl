@@ -1,21 +1,22 @@
-from sklearn.datasets import fetch_openml
-from sklearn.model_selection import train_test_split
-from sklearn.svm import LinearSVC
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-import numpy as np
+import tensorflow as tf
 
-# Load data
-X, y = fetch_openml('CIFAR_10', version=1, return_X_y=True, as_frame=False)
-X = X.astype('float32') / 255.0
+# Load and preprocess CIFAR-10 data
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
 
-# Split data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Define the model
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(input_shape=(32, 32, 3)),
+    tf.keras.layers.Dense(10, activation='softmax')
+])
 
-# Train and evaluate SVM
-svm = LinearSVC(random_state=42).fit(X_train, y_train)
-print(f"SVM Accuracy: {accuracy_score(y_test, svm.predict(X_test)):.4f}")
+# Compile and train
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
-# Train and evaluate Softmax
-softmax = LogisticRegression(multi_class='multinomial', solver='lbfgs', random_state=42).fit(X_train, y_train)
-print(f"Softmax Accuracy: {accuracy_score(y_test, softmax.predict(X_test)):.4f}")
+model.fit(x_train, y_train, epochs=50, validation_data=(x_test, y_test))
+
+# Evaluate
+test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
+print(f'\nTest accuracy: {test_acc}')
