@@ -9,21 +9,21 @@ x_train, x_test = x_train / 255.0, x_test / 255.0
 
 def create_model(use_batchnorm=False, use_dropout=False):
     model = Sequential([Flatten(input_shape=(28, 28))])
-    
+
     model.add(Dense(128, activation='relu'))
     if use_batchnorm:
         model.add(BatchNormalization())
     if use_dropout:
         model.add(Dropout(0.3))
-    
+
     model.add(Dense(64, activation='relu'))
     if use_batchnorm:
         model.add(BatchNormalization())
     if use_dropout:
         model.add(Dropout(0.3))
-    
+
     model.add(Dense(10, activation='softmax'))
-    
+
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     return model
 
